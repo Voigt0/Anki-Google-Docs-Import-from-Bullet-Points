@@ -76,7 +76,7 @@ Want to update the deck after editing the doc?
 
 1. Edit your Google Doc
 2. Wait a few minutes (Google takes time to publish changes)
-3. In Anki, click `Tools → Manage Remote Decks → Sync Remote Decks`
+3. In Anki, click `Voigt → Manage Remote Decks → Sync Remote Decks`
 
 Your changes will be imported into Anki without duplicating cards.
 
@@ -86,7 +86,7 @@ Your changes will be imported into Anki without duplicating cards.
 
 If you no longer want a document to sync:
 
-1. Click `Tools → Manage Remote Decks → Remove Remote Deck`
+1. Click `Voigt → Manage Remote Decks → Remove Remote Deck`
 
 > ⚠️ This does **not delete** the cards. It only removes the remote sync link.
 

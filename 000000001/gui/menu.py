@@ -1,8 +1,8 @@
 from aqt.qt import QMenu
-from .anking_menu import get_anking_menu
+from .anki_menu import get_anki_menu
 
 def setup_menu() -> QMenu:
-    anking_menu = get_anking_menu()
+    anki_menu = get_anki_menu()
     result = QMenu("Remote Decks")
-    anking_menu.addMenu(result)
+    anki_menu.addMenu(result)
     return result

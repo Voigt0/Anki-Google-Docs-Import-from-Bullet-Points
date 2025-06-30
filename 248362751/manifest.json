@@ -1,9 +1,9 @@
 {
     "name": "Voigt - Google Docs Import from Bullet Points",
-    "package": "000000001",
-    "ankiweb_id": "000000001",
+    "package": "248362751",
+    "ankiweb_id": "248362751",
     "author": "V01gt",
-    "version": "1.0",
+    "version": "1.1",
     "homepage": "",
     "conflicts": [
         "remote_decks"

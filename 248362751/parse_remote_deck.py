@@ -123,9 +123,11 @@ def _generateOrgListFromHtmlPage(cell_content):
     multiCommentSection = False
     orgFormattedFile = []
 
+    current_question = None
+    current_answer_lines = []
+
     for item in contents:
 
-        # Ignora se estiver em seção de comentário multilinha
         if _startOfMultiLineComment(item):
             multiCommentSection = True
             continue
@@ -135,7 +137,7 @@ def _generateOrgListFromHtmlPage(cell_content):
         elif multiCommentSection:
             continue
 
-        # Trata parágrafos <p>
+        # Trata <p>
         if item.name == "p":
             line = ""
             for span in item.find_all("span"):
@@ -149,9 +151,8 @@ def _generateOrgListFromHtmlPage(cell_content):
             if line and linkText != line:
                 orgFormattedFile.append(line)
 
-        # Trata listas <ul>
+        # Trata <ul>
         elif item.name == "ul":
-            # Detecta o nível da lista com base no sufixo da classe (ex: -0, -1, ...)
             list_level = 1
             for cls in item.get("class", []):
                 if m := re.search(r"-(\d+)(?:\s|$)", cls):
@@ -162,11 +163,10 @@ def _generateOrgListFromHtmlPage(cell_content):
             if not li_list:
                 continue
 
-            response_lines = []
+            lines = []
             for li in li_list:
                 _apply_styles(li, css_styles)
 
-                # Trata imagens
                 for img in li.find_all("img"):
                     styles = img.get("style", "")
                     width = (re.search(r"width:\s*(.+?);", styles) or ["", ""])[1]
@@ -175,14 +175,34 @@ def _generateOrgListFromHtmlPage(cell_content):
                     img.insert_after(image_text)
                     _clean_up(img)
 
-                cell_html = li.decode_contents()
-                cell_html = substitute_cloze_aliases(cell_html)
-                response_lines.append(cell_html.strip())
+                cell_html = substitute_cloze_aliases(li.decode_contents()).strip()
+                lines.append(cell_html)
 
-            # Junta tudo em uma única entrada com quebra de linha
-            prefix = "* " if list_level == 1 else "** "
-            final_text = "<br><br>".join(response_lines)
-            orgFormattedFile.append(f"{prefix}{final_text}")
+            # Agora decide o que fazer baseado no nível
+            if list_level == 1:
+                if current_answer_lines:
+                    # Se a resposta já começou, fecha o cartão atual
+                    orgFormattedFile.append(f"* {current_question}")
+                    orgFormattedFile.append(f"** {'<br><br>'.join(current_answer_lines)}")
+                    current_question = "<br>".join(lines)
+                    current_answer_lines = []
+                else:
+                    if not current_question:
+                        current_question = "<br>".join(lines)
+                    else:
+                        current_question += "<br>" + "<br>".join(lines)
+
+            elif list_level == 2:
+                current_answer_lines.extend(lines)
+
+            elif list_level >= 3:
+                nested = "<ul>" + "".join(f"<li>{line}</li>" for line in lines) + "</ul>"
+                current_answer_lines.append(nested)
+
+    # Finaliza o último cartão
+    if current_question and current_answer_lines:
+        orgFormattedFile.append(f"* {current_question}")
+        orgFormattedFile.append(f"** {'<br><br>'.join(current_answer_lines)}")
 
     return {"deckName": deckName, "data": orgFormattedFile}
 

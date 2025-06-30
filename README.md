@@ -62,7 +62,7 @@ Write your content in this structure:
 ## 📥 Importing the Deck into Anki
 
 1. Open Anki
-2. Click `Tools → Manage Remote Decks → Add New Remote Deck`
+2. Click `Voigt → Manage Remote Decks → Add New Remote Deck`
 3. Paste your **published URL**
 4. Click **OK**
 
